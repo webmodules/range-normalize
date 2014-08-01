@@ -1,0 +1,35 @@
+{
+  "name": "range-normalize",
+  "version": "0.0.0",
+  "description": "Cross-browser normalization of DOM Range start and end containers",
+  "main": "index.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/webmodules/range-normalize.git"
+  },
+  "keywords": [
+    "dom",
+    "range",
+    "instance",
+    "startContainer",
+    "endContainer",
+    "offset",
+    "normalize",
+    "normalization"
+  ],
+  "author": "Nathan Rajlich <nathan@tootallnate.net> (http://n8.io/)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/webmodules/range-normalize/issues"
+  },
+  "homepage": "https://github.com/webmodules/range-normalize",
+  "dependencies": {
+    "debug": "~1.0.4"
+  }
+}
