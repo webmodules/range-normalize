@@ -32,7 +32,6 @@ function normalize (range) {
     debug('start is at end of TextNode, need to move to `nextSibling`');
 
     while (sc && !sc.nextSibling) {
-      console.log(sc.nextSibling);
       sc = sc.parentNode;
     }
 
@@ -52,7 +51,6 @@ function normalize (range) {
     while (sc && sc.nodeType !== 3) {
       sc = sc.firstChild;
     }
-    console.log(sc);
 
     if (sc) {
       so = 0;
@@ -68,7 +66,6 @@ function normalize (range) {
     debug('end is at start of TextNode, need to move to `previousSibling`');
 
     while (ec && !ec.previousSibling) {
-      console.log(ec.previousSibling);
       ec = ec.parentNode;
     }
 
@@ -82,7 +79,6 @@ function normalize (range) {
     while (ec && ec.nodeType !== 3) {
       ec = ec.lastChild;
     }
-    console.log(ec);
 
     if (ec) {
       eo = ec.nodeValue.length;
