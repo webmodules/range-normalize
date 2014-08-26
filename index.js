@@ -69,7 +69,13 @@ function normalize (range) {
       ec = ec.parentNode;
     }
 
-    ec = ec.previousSibling;
+    if (ec) {
+      ec = ec.previousSibling;
+      eo = ec.childNodes.length;
+    } else {
+      debug('could not find TextNode within %o, resetting `sc`', range.endContainer);
+      sc = range.endContainer;
+    }
   }
 
 
@@ -90,9 +96,14 @@ function normalize (range) {
 
 
 
-  debug('normalizing to %o %o, %o %o:', sc, so, ec, eo);
-  range.setStart(sc, so);
-  range.setEnd(ec, eo);
+  if (sc !== range.startContainer || so !== range.startOffset) {
+    debug('normalizing Range `start` to %o %o:', sc, so);
+    range.setStart(sc, so);
+  }
+  if (ec !== range.endContainer || eo !== range.endOffset) {
+    debug('normalizing Range `end` to %o %o:', ec, eo);
+    range.setEnd(ec, eo);
+  }
 
   return range;
 }
