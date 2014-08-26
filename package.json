@@ -1,6 +1,6 @@
 {
   "name": "range-normalize",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "description": "Cross-browser normalization of DOM Range start and end containers",
   "main": "index.js",
   "directories": {
