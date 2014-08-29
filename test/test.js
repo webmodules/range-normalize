@@ -16,7 +16,6 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range is normalized to the inner TextNode of the <b>
-    console.log(range);
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
     assert(range.startOffset === 0);
     assert(range.endContainer === div.childNodes[1].firstChild);
@@ -35,7 +34,6 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range is normalized to the inner TextNode of the <b>
-    console.log(range);
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
     assert(range.startOffset === 0);
     assert(range.endContainer === div.childNodes[1].firstChild);
@@ -54,7 +52,6 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range is normalized to the inner TextNode of the <b>
-    console.log(range);
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
     assert(range.startOffset === 0);
     assert(range.endContainer === div.childNodes[1].firstChild);
