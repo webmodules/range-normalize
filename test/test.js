@@ -58,4 +58,23 @@ describe('range-normalize', function () {
     assert(range.endOffset === 4);
   });
 
+  it('should not move Range points into childless nodes', function () {
+    var div = document.createElement('div');
+    div.innerHTML = '<i>blah</i><br><b>hello</b>';
+
+    var range = document.createRange();
+    range.setStart(div.childNodes[0].firstChild, 4);
+    range.setEnd(div.childNodes[2].firstChild, 0);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range remains the same
+    assert(range.startContainer === div.childNodes[0].firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 4, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.childNodes[2].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 0, '`endOffset` doesn\'t match');
+  });
+
+
 });
