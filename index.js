@@ -26,6 +26,7 @@ function normalize (range) {
   var so = range.startOffset;
   var ec = range.endContainer;
   var eo = range.endOffset;
+  var tmp;
 
 
   if (sc.nodeType === 3 && so === sc.nodeValue.length) {
@@ -45,6 +46,7 @@ function normalize (range) {
   }
 
 
+  tmp = sc;
   if (sc.nodeType === 1) {
     debug('start is an Element, need to find deepest `firstChild` TextNode');
 
@@ -56,7 +58,7 @@ function normalize (range) {
       so = 0;
     } else {
       debug('could not find TextNode within %o, resetting `sc`', range.startContainer);
-      sc = range.startContainer;
+      sc = tmp;
     }
   }
 
@@ -79,6 +81,7 @@ function normalize (range) {
   }
 
 
+  tmp = ec;
   if (ec.nodeType === 1) {
     debug('end is an Element, need to find deepest `lastChild` TextNode');
 
@@ -90,7 +93,7 @@ function normalize (range) {
       eo = ec.nodeValue.length;
     } else {
       debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
-      ec = range.endContainer;
+      ec = tmp;
     }
   }
 
