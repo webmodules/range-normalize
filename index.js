@@ -74,7 +74,7 @@ function normalize (range) {
       eo = ec.childNodes.length;
     } else {
       debug('could not find TextNode within %o, resetting `sc`', range.endContainer);
-      sc = range.endContainer;
+      ec = range.endContainer;
     }
   }
 
