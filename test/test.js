@@ -4,7 +4,7 @@ var normalize = require('../');
 
 describe('range-normalize', function () {
 
-  it('should normalize a Range wrapping the outside of <b> node', function () {
+  it('should normalize a Range wrapping the outside of B node', function () {
     var div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
 
@@ -22,7 +22,7 @@ describe('range-normalize', function () {
     assert(range.endOffset === 4);
   });
 
-  it('should normalize a Range wrapping a <b> node', function () {
+  it('should normalize a Range wrapping a B node', function () {
     var div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
 
@@ -40,7 +40,7 @@ describe('range-normalize', function () {
     assert(range.endOffset === 4);
   });
 
-  it('should leave as-is a Range wrapping text inside a <b> node', function () {
+  it('should leave as-is a Range wrapping text inside a B node', function () {
     var div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
 
@@ -75,6 +75,5 @@ describe('range-normalize', function () {
     assert(range.endContainer === div.childNodes[2].firstChild, '`endContainer` doesn\'t match');
     assert(range.endOffset === 0, '`endOffset` doesn\'t match');
   });
-
 
 });
