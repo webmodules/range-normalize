@@ -132,10 +132,31 @@ describe('range-normalize', function () {
     // normalize Range
     normalize(range);
 
-    // test that the Range is normalized to the inner TextNode of the <b>
+    // test that the Range is normalized
     assert(range.startContainer === div.childNodes[1], '`startContainer` doesn\'t match');
     assert(range.startOffset === 0);
     assert(range.endContainer === div.childNodes[2], '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1);
+  });
+
+  it('should normalize a Range with multiple TextNodes 2', function () {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode('a'));
+    div.appendChild(document.createTextNode('b'));
+    div.appendChild(document.createTextNode('c'));
+    div.appendChild(document.createTextNode('d'));
+
+    var range = document.createRange();
+    range.setStart(div.childNodes[1], 0);
+    range.setEnd(div.childNodes[1], 1);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.childNodes[1], '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0);
+    assert(range.endContainer === div.childNodes[1], '`endContainer` doesn\'t match');
     assert(range.endOffset === 1);
   });
 
