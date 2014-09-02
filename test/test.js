@@ -58,6 +58,26 @@ describe('range-normalize', function () {
     assert(range.endOffset === 4);
   });
 
+  it('should normalize a Range in between DIV child nodes', function () {
+    var div = document.createElement('div');
+    div.innerHTML = '<i>hello</i><b>world</b>';
+
+    var range = document.createRange();
+    range.setStart(div, 1);
+    range.setEnd(div, 1);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized to the inner TextNode of the <b>
+    assert(range.startContainer === div.lastChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0);
+    assert(range.endContainer === div.lastChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 0);
+    assert(range.collapsed);
+  });
+
   it('should not move Range points into childless nodes', function () {
     var div = document.createElement('div');
     div.innerHTML = '<i>blah</i><br><b>hello</b>';
