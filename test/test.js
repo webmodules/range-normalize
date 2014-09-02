@@ -118,6 +118,27 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
+  it('should normalize a Range with multiple TextNodes', function () {
+    var div = document.createElement('div');
+    div.appendChild(document.createTextNode('a'));
+    div.appendChild(document.createTextNode('b'));
+    div.appendChild(document.createTextNode('c'));
+    div.appendChild(document.createTextNode('d'));
+
+    var range = document.createRange();
+    range.setStart(div.childNodes[0], 1);
+    range.setEnd(div.childNodes[3], 0);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized to the inner TextNode of the <b>
+    assert(range.startContainer === div.childNodes[1], '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0);
+    assert(range.endContainer === div.childNodes[2], '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1);
+  });
+
   it('should not move Range points into childless nodes', function () {
     var div = document.createElement('div');
     div.innerHTML = '<i>blah</i><br><b>hello</b>';

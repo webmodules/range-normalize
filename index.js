@@ -74,7 +74,7 @@ function normalize (range) {
 
     if (ec) {
       ec = ec.previousSibling;
-      eo = ec.childNodes.length;
+      eo = ec.nodeType === 3 ? ec.nodeValue.length : ec.childNodes.length;
     } else {
       debug('could not find TextNode within %o, resetting `sc`', range.endContainer);
       ec = range.endContainer;
