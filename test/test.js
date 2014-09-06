@@ -178,4 +178,28 @@ describe('range-normalize', function () {
     assert(range.endOffset === 0, '`endOffset` doesn\'t match');
   });
 
+  it('should normalize a Range pointing to parent nodes surrounding an A', function () {
+    var div = document.createElement('div');
+    div.innerHTML = '<p>asdf <b>asdf asd</b>f asdf afd<a href="#">asdfsdfsdfsafsdfsdfsfd</a>asfdsfdmsdfdfs asdf </p>'
+
+    var range = document.createRange();
+    range.setStart(div.firstChild, 3);
+    range.setEnd(div.firstChild, 4);
+
+    console.log(range.startContainer, range.startOffset);
+    console.log(range.endContainer, range.endOffset);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    console.log(range.startContainer, range.startOffset);
+    console.log(range.endContainer, range.endOffset);
+
+    assert(range.startContainer === div.firstChild.childNodes[3].firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.childNodes[3].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 22, '`endOffset` doesn\'t match');
+  });
+
 });
