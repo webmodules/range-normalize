@@ -1,4 +1,12 @@
 
+0.0.4 / 2014-09-06
+==================
+
+ * test: add failing test case
+ * test: attempting to fix Opera 11 failing tests
+ * travis: test more browsers
+ * index: fix failing test
+
 0.0.3 / 2014-09-02
 ==================
 
