@@ -3,10 +3,20 @@ var assert = require('assert');
 var normalize = require('../');
 
 describe('range-normalize', function () {
+  var div;
+
+  afterEach(function () {
+    if (div) {
+      // clean up...
+      document.body.removeChild(div);
+      div = null;
+    }
+  });
 
   it('should normalize a Range wrapping the outside of B node', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[0].firstChild, 5);
@@ -23,8 +33,9 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range wrapping a B node', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[1], 0);
@@ -41,8 +52,9 @@ describe('range-normalize', function () {
   });
 
   it('should leave as-is a Range wrapping text inside a B node', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>asdf </i><b>asdf</b> asdf';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[1].firstChild, 0);
@@ -59,8 +71,9 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range in between DIV child nodes (start)', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div, 0);
@@ -79,8 +92,9 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range in between DIV child nodes (middle)', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div, 1);
@@ -99,8 +113,9 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range in between DIV child nodes (end)', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div, 2);
@@ -119,11 +134,12 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range with multiple TextNodes', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.appendChild(document.createTextNode('a'));
     div.appendChild(document.createTextNode('b'));
     div.appendChild(document.createTextNode('c'));
     div.appendChild(document.createTextNode('d'));
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[0], 1);
@@ -140,11 +156,12 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range with multiple TextNodes 2', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.appendChild(document.createTextNode('a'));
     div.appendChild(document.createTextNode('b'));
     div.appendChild(document.createTextNode('c'));
     div.appendChild(document.createTextNode('d'));
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[1], 0);
@@ -161,8 +178,9 @@ describe('range-normalize', function () {
   });
 
   it('should not move Range points into childless nodes', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<i>blah</i><br><b>hello</b>';
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.childNodes[0].firstChild, 4);
@@ -179,8 +197,9 @@ describe('range-normalize', function () {
   });
 
   it('should normalize a Range pointing to parent nodes surrounding an A', function () {
-    var div = document.createElement('div');
+    div = document.createElement('div');
     div.innerHTML = '<p>asdf <b>asdf asd</b>f asdf afd<a href="#">asdfsdfsdfsafsdfsdfsfd</a>asfdsfdmsdfdfs asdf </p>'
+    document.body.appendChild(div);
 
     var range = document.createRange();
     range.setStart(div.firstChild, 3);
