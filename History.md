@@ -1,4 +1,10 @@
 
+1.0.0 / 2014-10-01
+==================
+
+ * package: update deps
+ * bumping to v1.0.0 for better semver defined behavior
+
 0.0.4 / 2014-09-06
 ==================
 
