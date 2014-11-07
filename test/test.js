@@ -276,4 +276,67 @@ describe('range-normalize', function () {
     assert(range.endOffset === 5, '`endOffset` doesn\'t match');
   });
 
+  it('should normalize a Range selecting text at the end of a P', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<div><p>a</p></div><p>merriweather 300 normal</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild.firstChild, 1);
+    range.setEnd(div.firstChild.firstChild.firstChild, 1);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
+  it('should normalize a Range selecting node above text at the end of a P', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<div><p>a</p></div><p>merriweather 300 normal</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 1);
+    range.setEnd(div.firstChild.firstChild, 1);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
+  it('should normalize a Range selecting node 2 levels above text at the end of a P', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<div><p>a</p></div><p>merriweather 300 normal</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild, 1);
+    range.setEnd(div.firstChild, 1);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
 });
