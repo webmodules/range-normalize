@@ -257,6 +257,27 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
+  it('should normalize a Range pointing to the end text node with B and I parents', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p><b><i>hello</i></b></p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild.firstChild.firstChild, 5);
+    range.setEnd(div.firstChild.firstChild.firstChild.firstChild, 5);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 5, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 5, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
   it('should normalize a Range selecting parent P with B and I children', function () {
     div = document.createElement('div');
     div.innerHTML = '<p><b><i>hello</i></b></p>';
