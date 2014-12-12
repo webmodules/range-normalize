@@ -360,4 +360,54 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
+  it('should Normalize a non-collapsed Range with start pointing to a TextNode and end pointing to ending Element boundary', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>foo</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 3);
+    range.setEnd(div.firstChild, 1);
+    assert(!range.collapsed);
+
+    console.log(range.collapsed);
+    console.log(range.startContainer, range.startOffset);
+    console.log(range.endContainer, range.endOffset);
+
+    // normalize Range
+    normalize(range);
+
+    console.log(range.collapsed);
+    console.log(range.startContainer, range.startOffset);
+    console.log(range.endContainer, range.endOffset);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 3, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
+  it('should leave as-is a collapsed Range already pointing to a TextNode', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>foo</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 3);
+    range.setEnd(div.firstChild.firstChild, 3);
+    assert(range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 3, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
+    assert(range.collapsed);
+  });
+
 });
