@@ -33,6 +33,6 @@
     "debug": "2"
   },
   "devDependencies": {
-    "zuul": "~1.11.0"
+    "zuul": "~1.16.0"
   }
 }
