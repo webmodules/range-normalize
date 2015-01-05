@@ -370,16 +370,8 @@ describe('range-normalize', function () {
     range.setEnd(div.firstChild, 1);
     assert(!range.collapsed);
 
-    console.log(range.collapsed);
-    console.log(range.startContainer, range.startOffset);
-    console.log(range.endContainer, range.endOffset);
-
     // normalize Range
     normalize(range);
-
-    console.log(range.collapsed);
-    console.log(range.startContainer, range.startOffset);
-    console.log(range.endContainer, range.endOffset);
 
     // test that the Range is normalized
     assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
