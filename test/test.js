@@ -402,4 +402,25 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
+  it('should normalize a Range already pointing to a text node and a DIV', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>foo</p><p>bar</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 2);
+    range.setEnd(div, 1);
+    assert.equal('o', range.toString());
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 2, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
+    assert.equal('o', range.toString());
+  });
+
 });
