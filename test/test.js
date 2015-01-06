@@ -190,10 +190,11 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range remains the same
-    assert(range.startContainer === div.childNodes[0].firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 4, '`startOffset` doesn\'t match')
-    assert(range.endContainer === div.childNodes[2].firstChild, '`endContainer` doesn\'t match');
-    assert(range.endOffset === 0, '`endOffset` doesn\'t match');
+    assert(!range.collapsed, 'range should not be collapsed');
+    assert(range.startContainer === div, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 1, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 2, '`endOffset` doesn\'t match');
   });
 
   it('should normalize a Range pointing to parent nodes surrounding an A', function () {
@@ -442,6 +443,29 @@ describe('range-normalize', function () {
     assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
     assert(range.endOffset === 3, '`endOffset` doesn\'t match');
     assert.equal('o', range.toString());
+  });
+
+  it('should normalize a Range wrapping a BR node', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p><br></p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div, 0);
+    range.setEnd(div, 1);
+    assert.equal('', range.toString());
+    assert(!range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert.equal('', range.toString());
+    assert(!range.collapsed);
   });
 
 });

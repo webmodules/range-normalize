@@ -31,7 +31,8 @@
   },
   "homepage": "https://github.com/webmodules/range-normalize",
   "dependencies": {
-    "debug": "2"
+    "debug": "2",
+    "void-elements": "1"
   },
   "devDependencies": {
     "zuul": "~1.16.3"

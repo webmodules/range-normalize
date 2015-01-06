@@ -5,6 +5,12 @@
 
 var debug = require('debug')('range-normalize');
 
+// map to an Object for faster lookup times
+var voidElements = require('void-elements').reduce(function (obj, name) {
+  obj[name.toUpperCase()] = true;
+  return obj;
+}, {});
+
 /**
  * Module exports.
  */
@@ -47,30 +53,47 @@ function normalize (range) {
 
 
   if (sc.nodeType === 1) {
-    debug('start is an Element, need to find deepest child node at offset %o', so);
-
-    if (so >= sc.childNodes.length) {
-      end = true;
-      sc = sc.childNodes[sc.childNodes.length - 1];
+    if (voidElements[sc.nodeName]) {
+      debug('start is a "void element", need to use parent node', sc);
+      var v = sc;
+      sc = v.parentNode;
+      so = toArray(sc.childNodes).indexOf(v);
     } else {
-      end = false;
-      sc = sc.childNodes[so];
-    }
+      debug('start is an Element, need to find deepest child node at offset %o', so);
 
-    while (sc && sc.nodeType !== 3) {
-      if (end) {
-        sc = sc.lastChild;
+      if (so >= sc.childNodes.length) {
+        end = true;
+        sc = sc.childNodes[sc.childNodes.length - 1];
       } else {
-        sc = sc.firstChild;
+        end = false;
+        sc = sc.childNodes[so];
       }
-    }
 
-    if (sc) {
-      so = end ? sc.nodeValue.length : 0;
-    } else {
-      debug('could not find TextNode within %o, resetting `sc`', range.startContainer);
-      sc = range.startContainer;
-      so = range.startOffset;
+      var c;
+      while (sc) {
+        if (sc.nodeType === 3) break;
+        if (end) {
+          c = sc.lastChild;
+        } else {
+          c = sc.firstChild;
+        }
+        if (c && voidElements[c.nodeName]) break;
+        sc = c;
+      }
+
+      if (sc) {
+        if (sc.nodeType === 1) {
+          // a "void element"'s parent
+          so = end ? sc.childNodes.length : 0;
+        } else {
+          // text node
+          so = end ? sc.nodeValue.length : 0;
+        }
+      } else {
+        debug('could not find TextNode within %o, resetting `sc`', range.startContainer);
+        sc = range.startContainer;
+        so = range.startOffset;
+      }
     }
   }
 
@@ -107,38 +130,55 @@ function normalize (range) {
 
 
     if (ec.nodeType === 1) {
-      debug('end is an Element, need to find deepest node at offset %o', eo);
-      end = true;
-
-      if (eo >= ec.childNodes.length) {
-        ec = ec.childNodes[ec.childNodes.length - 1];
-      } else {
-        ec = ec.childNodes[eo - 1];
-      }
-
-      while (ec && ec.nodeType !== 3) {
-        ec = ec.lastChild;
-      }
-
-      if (ec) {
-        eo = ec.nodeValue.length;
-      } else {
-        debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
-        if (collapsed) {
-          ec = sc;
-          eo = so;
-        } else {
-          ec = range.endContainer;
-          eo = range.endOffset;
-        }
+      if (voidElements[ec.nodeName]) {
+        debug('end is a "void element", need to use parent node', ec);
+        var v = ec;
+        ec = v.parentNode;
+        eo = toArray(ec.childNodes).indexOf(v) + 1;
         break;
+      } else {
+        debug('end is an Element, need to find deepest node at offset %o', eo);
+        end = true;
+
+        if (eo >= ec.childNodes.length) {
+          ec = ec.childNodes[ec.childNodes.length - 1];
+        } else {
+          ec = ec.childNodes[eo - 1];
+        }
+
+        var c;
+        while (ec) {
+          if (ec.nodeType === 3) break;
+          c = ec.lastChild;
+          if (c && voidElements[c.nodeName]) break;
+          ec = c;
+        }
+
+        if (ec) {
+          if (ec.nodeType === 1) {
+            // a "void element"'s parent
+            eo = ec.childNodes.length;
+          } else {
+            // text node
+            eo = ec.nodeValue.length;
+          }
+          break;
+        } else {
+          debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
+          if (collapsed) {
+            ec = sc;
+            eo = so;
+          } else {
+            ec = range.endContainer;
+            eo = range.endOffset;
+          }
+          break;
+        }
       }
     } else {
       break;
     }
-
   }
-
 
 
   if (sc !== range.startContainer || so !== range.startOffset) {
@@ -151,4 +191,16 @@ function normalize (range) {
   }
 
   return range;
+}
+
+/**
+ * Inlined to-array function
+ */
+
+function toArray (a) {
+  var r = [];
+  for (var i = 0, l = a.length; i < l; i++) {
+    r.push(a[i]);
+  }
+  return r;
 }
