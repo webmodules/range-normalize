@@ -108,25 +108,20 @@ function normalize (range) {
 
     if (ec.nodeType === 1) {
       debug('end is an Element, need to find deepest node at offset %o', eo);
+      end = true;
 
       if (eo >= ec.childNodes.length) {
-        end = true;
         ec = ec.childNodes[ec.childNodes.length - 1];
       } else {
-        end = false;
-        ec = ec.childNodes[eo];
+        ec = ec.childNodes[eo - 1];
       }
 
       while (ec && ec.nodeType !== 3) {
-        if (end) {
-          ec = ec.lastChild;
-        } else {
-          ec = ec.firstChild;
-        }
+        ec = ec.lastChild;
       }
 
       if (ec) {
-        eo = end ? ec.nodeValue.length : 0;
+        eo = ec.nodeValue.length;
       } else {
         debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
         if (collapsed) {
