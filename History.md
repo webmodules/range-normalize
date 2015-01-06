@@ -1,4 +1,12 @@
 
+1.0.2 / 2015-01-05
+==================
+
+  * index: add and fix a failing test case
+  * package: add "collapse" as a keyword
+  * package: update "zuul" to v1.16.0
+  * test: more sanity test checks
+
 1.0.1 / 2014-10-30
 ==================
 
