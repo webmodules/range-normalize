@@ -1,4 +1,11 @@
 
+1.1.0 / 2015-01-06
+==================
+
+  * test: add another void elements test case
+  * index: add support for "void elements"
+  * package: update "zuul" to v1.16.3
+
 1.0.2 / 2015-01-05
 ==================
 
