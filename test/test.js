@@ -491,4 +491,28 @@ describe('range-normalize', function () {
     assert(!range.collapsed);
   });
 
+  it('should normalize a Range wrapping multiple BR nodes', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>hello</p><p><b><br></b></p><p><b><br></b></p><p><b>wo</b>rld</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div, 1);
+    range.setEnd(div, 2);
+    assert.equal('', range.toString());
+    assert(!range.collapsed);
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.childNodes[1].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert.equal('', range.toString());
+    assert(!range.collapsed);
+    assert.equal(range.startContainer.childNodes[range.startOffset].nodeName, 'BR');
+  });
+
 });
