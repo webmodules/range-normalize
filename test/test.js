@@ -537,8 +537,6 @@ describe('range-normalize', function () {
     assert(range.endOffset === 1, '`endOffset` doesn\'t match');
     assert.equal('', range.toString());
     assert(!range.collapsed);
-    //assert.equal(range.startContainer.nodeName, 'B');
-    //assert.equal(range.startContainer.childNodes[range.startOffset].nodeName, 'BR');
   });
 
 });
