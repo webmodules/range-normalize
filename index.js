@@ -24,6 +24,34 @@ module.exports = normalize;
  * The aim is to always have `startContainer` and `endContainer` pointing to
  * TextNode instances.
  *
+ * Pseudo-logic is as follows:
+ *
+ * For the "start":
+ *
+ *  - Is start container already a text node?
+ *    - Is start offset at the end of the text node?
+ *      - Traverse "up" the start container until a `nextSibling` is found
+ *      - Set new offset = 0
+ *      - Go back to start, repeat
+ *    - Else
+ *      - Done! start container and offset are normalized
+ *  - Else
+ *    - Traverse "down" the start container until either a text node or void element is found
+ *    - Set new start offset = 0
+ *    - Is new start container a text node?
+ *      - Go back to start, repeat
+ *    - Else, is new start container a void element?
+ *      - Set start container's `parentNode` as new start container
+ *      - Set new start offset = indexOf(new start container's `childNodes`, old start container "void element")
+ *    - Else (assume start container is any other HTML element which may or may not contain children)
+ *      - ???
+ *
+ * For the "end":
+ *
+ *  - Is end container already a text node?
+ *    - Is end offset at the beginning of the text node?
+ *      - Traverse "up" the end container until a `previousSibling` is found
+ *
  * @param {Range} range - DOM Range instance to "normalize"
  * @return {Range} returns `range`, after being "normalized"
  */
