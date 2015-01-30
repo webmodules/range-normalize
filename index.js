@@ -3,6 +3,7 @@
  * Module dependencies.
  */
 
+var indexOf = require('index-of');
 var debug = require('debug')('range-normalize');
 
 // map to an Object for faster lookup times
@@ -57,7 +58,7 @@ function normalize (range) {
       debug('start is a "void element", need to use parent node', sc);
       var v = sc;
       sc = v.parentNode;
-      so = toArray(sc.childNodes).indexOf(v);
+      so = indexOf(sc.childNodes, v);
     } else {
       debug('start is an Element, need to find deepest child node at offset %o', so);
 
@@ -134,7 +135,7 @@ function normalize (range) {
         debug('end is a "void element", need to use parent node', ec);
         var v = ec;
         ec = v.parentNode;
-        eo = toArray(ec.childNodes).indexOf(v) + 1;
+        eo = indexOf(ec.childNodes, v) + 1;
         break;
       } else {
         debug('end is an Element, need to find deepest node at offset %o', eo);
@@ -191,16 +192,4 @@ function normalize (range) {
   }
 
   return range;
-}
-
-/**
- * Inlined to-array function
- */
-
-function toArray (a) {
-  var r = [];
-  for (var i = 0, l = a.length; i < l; i++) {
-    r.push(a[i]);
-  }
-  return r;
 }
