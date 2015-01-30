@@ -58,171 +58,134 @@ module.exports = normalize;
 
 function normalize (range) {
   var start = {
+    end: false,
     node: range.startContainer,
     offset: range.startOffset
   };
   var end = {
+    end: true,
     node: range.endContainer,
     offset: range.endOffset
   };
-  var atEnd = false;
   var collapsed = range.collapsed;
 
-  if (start.node.nodeType === 3 && start.offset === start.node.nodeValue.length) {
-    debug('start is at end of TextNode, need to move to `nextSibling`');
 
-    while (start.node && !start.node.nextSibling) {
-      start.node = start.node.parentNode;
-    }
-
-    if (start.node) {
-      start.node = start.node.nextSibling;
-      start.offset = 0;
-    } else {
-      debug('could not find TextNode within %o, resetting `start.node`', range.startContainer);
-      start.node = range.startContainer;
+  function normalizeStart () {
+    debug('normalizeStart()');
+    var type = start.node.nodeType;
+    if (type === 3 /* text */) {
+      normalizeTextNode(start, start.node.nodeValue.length, 'nextSibling', normalizeStart);
+    } else if (type === 1 /* element */) {
+      normalizeElement(start, normalizeStart);
     }
   }
 
 
-  if (start.node.nodeType === 1) {
-    if (voidElements[start.node.nodeName]) {
-      debug('start is a "void element", need to use parent node', start.node);
-      var v = start.node;
-      start.node = v.parentNode;
-      start.offset = indexOf(start.node.childNodes, v);
+  function normalizeEnd () {
+    debug('normalizeEnd()');
+    if (collapsed) {
+      end.node = start.node;
+      end.offset = start.offset;
+      debug('range is "collapsed", set end.node=%o, end.offset=%o', name(end.node), end.offset);
     } else {
-      debug('start is an Element, need to find deepest child node at offset %o', start.offset);
-
-      if (start.offset >= start.node.childNodes.length) {
-        atEnd = true;
-        start.node = start.node.childNodes[start.node.childNodes.length - 1];
-      } else {
-        atEnd = false;
-        start.node = start.node.childNodes[start.offset];
-      }
-
-      var c;
-      while (start.node) {
-        if (start.node.nodeType === 3) break;
-        if (atEnd) {
-          c = start.node.lastChild;
-        } else {
-          c = start.node.firstChild;
-        }
-        if (c && voidElements[c.nodeName]) break;
-        start.node = c;
-      }
-
-      if (start.node) {
-        if (start.node.nodeType === 1) {
-          // a "void element"'s parent
-          start.offset = atEnd ? start.node.childNodes.length : 0;
-        } else {
-          // text node
-          start.offset = atEnd ? start.node.nodeValue.length : 0;
-        }
-      } else {
-        debug('could not find TextNode within %o, resetting `start.node`', range.startContainer);
-        start.node = range.startContainer;
-        start.offset = range.startOffset;
+      var type = end.node.nodeType;
+      if (type === 3 /* text */) {
+        normalizeTextNode(end, 0, 'previousSibling', normalizeEnd);
+      } else if (type === 1 /* element */) {
+        normalizeElement(end, normalizeEnd);
       }
     }
   }
 
+  function normalizeTextNode (info, badOffset, sibling, startOver) {
+    debug('normalizeTextNode() node=%o offset=%o end=%o, badOffset=%o', name(info.node), info.offset, info.end, badOffset);
+    if (info.offset === badOffset) {
+      debug('offset %o is "bad", need to move to %o', info.offset, sibling);
 
-  while (true) {
-
-    if (collapsed && end.node === start.node && end.offset === start.offset) {
-      debug('collapsed Range with both boundaries touching, done with `end.node`/`end.offset`');
-      break;
-    }
-
-    if (end.node.nodeType === 3 && end.offset === 0) {
-      debug('end is at start of TextNode, need to move to `previousSibling`');
-
-      while (end.node && !end.node.previousSibling) {
-        end.node = end.node.parentNode;
+      var node = info.node;
+      while (node && !node[sibling]) {
+        node = node.parentNode;
       }
 
-      if (end.node) {
-        end.node = end.node.previousSibling;
-        end.offset = end.node.nodeType === 3 ? end.node.nodeValue.length : end.node.childNodes.length;
-      } else {
-        debug('could not find TextNode within %o, resetting `end.node`', range.endContainer);
-        if (collapsed) {
-          end.node = start.node;
-          end.offset = start.offset;
+      if (node) {
+        info.node = node[sibling];
+        if (info.end) {
+          info.offset = info.node.nodeType === 3 ? info.node.nodeValue.length : info.node.childNodes.length;
         } else {
-          end.node = range.endContainer;
-          end.offset = range.endOffset;
-        }
-        break;
-      }
-    }
-
-
-    if (end.node.nodeType === 1) {
-      if (voidElements[end.node.nodeName]) {
-        debug('end is a "void element", need to use parent node', end.node);
-        var v = end.node;
-        end.node = v.parentNode;
-        end.offset = indexOf(end.node.childNodes, v) + 1;
-        break;
-      } else {
-        debug('end is an Element, need to find deepest node at offset %o', end.offset);
-        atEnd = true;
-
-        if (end.offset >= end.node.childNodes.length) {
-          end.node = end.node.childNodes[end.node.childNodes.length - 1];
-        } else {
-          end.node = end.node.childNodes[end.offset - 1];
+          info.offset = 0;
         }
 
-        var c;
-        while (end.node) {
-          if (end.node.nodeType === 3) break;
-          c = end.node.lastChild;
-          if (c && voidElements[c.nodeName]) break;
-          end.node = c;
-        }
+        debug('new node=%o offset=%o', name(info.node), info.offset);
 
-        if (end.node) {
-          if (end.node.nodeType === 1) {
-            // a "void element"'s parent
-            end.offset = end.node.childNodes.length;
-          } else {
-            // text node
-            end.offset = end.node.nodeValue.length;
-          }
-          break;
-        } else {
-          debug('could not find TextNode within %o, resetting `end.node`', range.endContainer);
-          if (collapsed) {
-            end.node = start.node;
-            end.offset = start.offset;
-          } else {
-            end.node = range.endContainer;
-            end.offset = range.endOffset;
-          }
-          break;
-        }
+        startOver();
       }
     } else {
-      break;
+      // text node and offset are in a normalized state, do nothing...
     }
   }
 
+  function normalizeElement (info, startOver) {
+    debug('normalizeElement() node=%o offset=%o', name(info.node), info.offset);
+    if (voidElements[info.node.nodeName]) {
+      normalizeVoidElement(info, 0);
+    } else {
+      debug('need to find deepest child node of %o at offset=%o', name(info.node), info.offset);
+
+      var nodes = info.node.childNodes;
+      if (info.offset >= nodes.length) {
+        info.node = nodes[nodes.length - 1];
+        info.offset = info.node.childNodes.length;
+        info.end = true;
+      } else {
+        info.node = info.node.childNodes[info.offset];
+        info.offset = 0;
+      }
+
+      if (info.end) {
+        info.offset = info.node.nodeType === 1 ? info.node.childNodes.length : info.node.nodeValue.length;
+      }
+
+      debug('new node=%o offset=%o', name(info.node), info.offset);
+
+      startOver();
+    }
+  }
+
+  function normalizeVoidElement (info, delta) {
+    debug('%o is a "void element", need to use parent node', name(info.node));
+    var node = info.node;
+    var parent = node.parentNode;
+    if (parent) {
+      info.node = parent;
+      info.offset = indexOf(parent.childNodes, node) + delta;
+      debug('new parent is node=%o offset=%o', name(info.node), info.offset);
+    }
+  }
+
+
+  normalizeStart();
+
+  debug('');
+  debug('');
+  debug('');
+
+  normalizeEnd();
 
   if (start.node !== range.startContainer || start.offset !== range.startOffset) {
-    debug('normalizing Range `start` to %o %o:', start.node, start.offset);
+    debug('normalizing Range `start` to node=%o offset=%o:', name(start.node), start.offset);
     range.setStart(start.node, start.offset);
   }
 
   if (end.node !== range.endContainer || end.offset !== range.endOffset) {
-    debug('normalizing Range `end` to %o %o:', end.node, end.offset);
+    debug('normalizing Range `end` to node=%o offset=%o:', name(end.node), end.offset);
     range.setEnd(end.node, end.offset);
   }
 
   return range;
+}
+
+function name (node) {
+  return node.nodeType === 3 ?
+    node.nodeValue :
+    '<' + node.nodeName + '>';
 }
