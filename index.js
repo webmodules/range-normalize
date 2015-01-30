@@ -80,7 +80,6 @@ function normalize (range) {
     }
   }
 
-
   function normalizeEnd () {
     debug('normalizeEnd()');
     if (collapsed) {
@@ -121,28 +120,24 @@ function normalize (range) {
       }
     } else {
       // text node and offset are in a normalized state, do nothing...
+      debug('DONE! node=%o offset=%o', name(info.node), info.offset);
     }
   }
 
   function normalizeElement (info, startOver) {
     debug('normalizeElement() node=%o offset=%o', name(info.node), info.offset);
     if (voidElements[info.node.nodeName]) {
-      normalizeVoidElement(info, 0);
+      normalizeVoidElement(info, info.end ? 1 : 0);
     } else {
       debug('need to find deepest child node of %o at offset=%o', name(info.node), info.offset);
 
       var nodes = info.node.childNodes;
       if (info.offset >= nodes.length) {
         info.node = nodes[nodes.length - 1];
-        info.offset = info.node.childNodes.length;
-        info.end = true;
+        info.offset = info.node.nodeType === 1 ? info.node.childNodes.length : info.node.nodeValue.length;
       } else {
         info.node = info.node.childNodes[info.offset];
         info.offset = 0;
-      }
-
-      if (info.end) {
-        info.offset = info.node.nodeType === 1 ? info.node.childNodes.length : info.node.nodeValue.length;
       }
 
       debug('new node=%o offset=%o', name(info.node), info.offset);
@@ -158,7 +153,7 @@ function normalize (range) {
     if (parent) {
       info.node = parent;
       info.offset = indexOf(parent.childNodes, node) + delta;
-      debug('new parent is node=%o offset=%o', name(info.node), info.offset);
+      debug('DONE! node=%o offset=%o', name(info.node), info.offset);
     }
   }
 
@@ -167,9 +162,11 @@ function normalize (range) {
 
   debug('');
   debug('');
-  debug('');
 
   normalizeEnd();
+
+  debug('');
+  debug('');
 
   if (start.node !== range.startContainer || start.offset !== range.startOffset) {
     debug('normalizing Range `start` to node=%o offset=%o:', name(start.node), start.offset);
