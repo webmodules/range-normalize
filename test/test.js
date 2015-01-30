@@ -27,9 +27,9 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 0);
-    assert(range.endContainer === div.childNodes[1].firstChild);
-    assert(range.endOffset === 4);
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
+    assert(range.endContainer === div.childNodes[1].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 4, '`endOffset` doesn\'t match');
   });
 
   it('should normalize a Range wrapping a B node', function () {
@@ -46,9 +46,9 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 0);
-    assert(range.endContainer === div.childNodes[1].firstChild);
-    assert(range.endOffset === 4);
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
+    assert(range.endContainer === div.childNodes[1].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 4, '`endOffset` doesn\'t match');
   });
 
   it('should leave as-is a Range wrapping text inside a B node', function () {
@@ -65,9 +65,10 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.childNodes[1].firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 0);
-    assert(range.endContainer === div.childNodes[1].firstChild);
-    assert(range.endOffset === 4);
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
+    assert(range.endContainer === div.childNodes[1].firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 4, '`endOffset` doesn\'t match');
+    assert(!range.collapsed);
   });
 
   it('should normalize a Range in between DIV child nodes (start)', function () {
@@ -85,9 +86,9 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 0);
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
     assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
-    assert(range.endOffset === 0);
+    assert(range.endOffset === 0, '`endOffset` doesn\'t match');
     assert(range.collapsed);
   });
 
@@ -105,10 +106,10 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range is normalized
-    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 5);
-    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
-    assert(range.endOffset === 5);
+    assert(range.startContainer === div.lastChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
+    assert(range.endContainer === div.lastChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 0, '`endOffset` doesn\'t match');
     assert(range.collapsed);
   });
 
@@ -127,9 +128,9 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.lastChild.firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 5);
+    assert(range.startOffset === 5, '`startOffset` doesn\'t match');
     assert(range.endContainer === div.lastChild.firstChild, '`endContainer` doesn\'t match');
-    assert(range.endOffset === 5);
+    assert(range.endOffset === 5, '`endOffset` doesn\'t match');
     assert(range.collapsed);
   });
 
@@ -150,9 +151,10 @@ describe('range-normalize', function () {
 
     // test that the Range is normalized
     assert(range.startContainer === div.childNodes[1], '`startContainer` doesn\'t match');
-    assert(range.startOffset === 0);
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match');
     assert(range.endContainer === div.childNodes[2], '`endContainer` doesn\'t match');
-    assert(range.endOffset === 1);
+    assert(range.endOffset === 1, '`endOffset` doesn\'t match');
+    assert(!range.collapsed);
   });
 
   it('should normalize a Range with multiple TextNodes 2', function () {
