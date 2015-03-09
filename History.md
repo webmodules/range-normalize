@@ -1,4 +1,14 @@
 
+1.1.1 / 2015-03-09
+==================
+
+  * add optimizations for collapsed Ranges
+  * starting to document psuedo-logic of range normalization
+  * package: allow any zuul "v2"
+  * use "index-of" module
+  * test: add another assert()
+  * test: another test case
+
 1.1.0 / 2015-01-06
 ==================
 
