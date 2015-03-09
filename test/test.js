@@ -70,7 +70,7 @@ describe('range-normalize', function () {
     assert(range.endOffset === 4);
   });
 
-  it('should normalize a Range in between DIV child nodes (start)', function () {
+  it('should normalize a collapsed Range in between DIV child nodes (start)', function () {
     div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
     document.body.appendChild(div);
@@ -91,7 +91,7 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
-  it('should normalize a Range in between DIV child nodes (middle)', function () {
+  it('should normalize a collapsed Range in between DIV child nodes (middle)', function () {
     div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
     document.body.appendChild(div);
@@ -105,14 +105,14 @@ describe('range-normalize', function () {
     normalize(range);
 
     // test that the Range is normalized
-    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
-    assert(range.startOffset === 5);
-    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
-    assert(range.endOffset === 5);
+    assert(range.startContainer === div.lastChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0);
+    assert(range.endContainer === div.lastChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 0);
     assert(range.collapsed);
   });
 
-  it('should normalize a Range in between DIV child nodes (end)', function () {
+  it('should normalize a collapsed Range in between DIV child nodes (end)', function () {
     div = document.createElement('div');
     div.innerHTML = '<i>hello</i><b>world</b>';
     document.body.appendChild(div);
@@ -216,7 +216,7 @@ describe('range-normalize', function () {
     assert(range.endOffset === 22, '`endOffset` doesn\'t match');
   });
 
-  it('should normalize a Range pointing to the beginning of parent P with B and I children', function () {
+  it('should normalize a collapsed Range pointing to the beginning of parent P with B and I children', function () {
     div = document.createElement('div');
     div.innerHTML = '<p><b><i>hello</i></b></p>';
     document.body.appendChild(div);
@@ -237,7 +237,7 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
-  it('should normalize a Range pointing to the end of parent P with B and I children', function () {
+  it('should normalize a collapsed Range pointing to the end of parent P with B and I children', function () {
     div = document.createElement('div');
     div.innerHTML = '<p><b><i>hello</i></b></p>';
     document.body.appendChild(div);
@@ -319,7 +319,7 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
-  it('should normalize a Range selecting node above text at the end of a P', function () {
+  it('should normalize a collapsed Range selecting node above text at the end of a P', function () {
     div = document.createElement('div');
     div.innerHTML = '<div><p>a</p></div><p>merriweather 300 normal</p>';
     document.body.appendChild(div);
@@ -340,7 +340,7 @@ describe('range-normalize', function () {
     assert(range.collapsed);
   });
 
-  it('should normalize a Range selecting node 2 levels above text at the end of a P', function () {
+  it('should normalize a collapsed Range selecting node 2 levels above text at the end of a P', function () {
     div = document.createElement('div');
     div.innerHTML = '<div><p>a</p></div><p>merriweather 300 normal</p>';
     document.body.appendChild(div);
@@ -514,6 +514,30 @@ describe('range-normalize', function () {
     assert(!range.collapsed);
     assert.equal(range.startContainer.nodeName, 'B');
     assert.equal(range.startContainer.childNodes[range.startOffset].nodeName, 'BR');
+  });
+
+  it('should normalize a Range that ends with the beginning of a P', function () {
+    div = document.createElement('div');
+    div.innerHTML = '<p>foo</p>' +
+                    '<p>bar</p>';
+    document.body.appendChild(div);
+
+    var range = document.createRange();
+    range.setStart(div.firstChild.firstChild, 0);
+    range.setEnd(div.lastChild, 0);
+    assert(!range.collapsed);
+    assert.equal('foo', range.toString());
+
+    // normalize Range
+    normalize(range);
+
+    // test that the Range is normalized
+    assert(range.startContainer === div.firstChild.firstChild, '`startContainer` doesn\'t match');
+    assert(range.startOffset === 0, '`startOffset` doesn\'t match')
+    assert(range.endContainer === div.firstChild.firstChild, '`endContainer` doesn\'t match');
+    assert(range.endOffset === 3, '`endOffset` doesn\'t match');
+    assert.equal('foo', range.toString());
+    assert(!range.collapsed);
   });
 
 });

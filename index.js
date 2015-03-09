@@ -64,7 +64,7 @@ function normalize (range) {
   var collapsed = range.collapsed;
   var end;
 
-  if (sc.nodeType === 3 && so === sc.nodeValue.length) {
+  if (!collapsed && sc.nodeType === 3 && so === sc.nodeValue.length) {
     debug('start is at end of TextNode, need to move to `nextSibling`');
 
     while (sc && !sc.nextSibling) {
@@ -126,74 +126,26 @@ function normalize (range) {
     }
   }
 
+  if (collapsed) {
+    // if we're dealing with a collapsed Range, then update the end
+    // points to match our normalized start container and offset
+    ec = sc;
+    eo = so;
+  } else {
+    while (true) {
 
-  while (true) {
+      if (eo === 0) {
+        debug('end is at start of Node, need to move to `previousSibling`');
 
-    if (collapsed && ec === sc && eo === so) {
-      debug('collapsed Range with both boundaries touching, done with `ec`/`eo`');
-      break;
-    }
-
-    if (ec.nodeType === 3 && eo === 0) {
-      debug('end is at start of TextNode, need to move to `previousSibling`');
-
-      while (ec && !ec.previousSibling) {
-        ec = ec.parentNode;
-      }
-
-      if (ec) {
-        ec = ec.previousSibling;
-        eo = ec.nodeType === 3 ? ec.nodeValue.length : ec.childNodes.length;
-      } else {
-        debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
-        if (collapsed) {
-          ec = sc;
-          eo = so;
-        } else {
-          ec = range.endContainer;
-          eo = range.endOffset;
-        }
-        break;
-      }
-    }
-
-
-    if (ec.nodeType === 1) {
-      if (voidElements[ec.nodeName]) {
-        debug('end is a "void element", need to use parent node', ec);
-        var v = ec;
-        ec = v.parentNode;
-        eo = indexOf(ec.childNodes, v) + 1;
-        break;
-      } else {
-        debug('end is an Element, need to find deepest node at offset %o', eo);
-        end = true;
-
-        if (eo >= ec.childNodes.length) {
-          ec = ec.childNodes[ec.childNodes.length - 1];
-        } else {
-          ec = ec.childNodes[eo - 1];
-        }
-
-        var c;
-        while (ec) {
-          if (ec.nodeType === 3) break;
-          c = ec.lastChild;
-          if (c && voidElements[c.nodeName]) break;
-          ec = c;
+        while (ec && !ec.previousSibling) {
+          ec = ec.parentNode;
         }
 
         if (ec) {
-          if (ec.nodeType === 1) {
-            // a "void element"'s parent
-            eo = ec.childNodes.length;
-          } else {
-            // text node
-            eo = ec.nodeValue.length;
-          }
-          break;
+          ec = ec.previousSibling;
+          eo = ec.nodeType === 3 ? ec.nodeValue.length : ec.childNodes.length;
         } else {
-          debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
+          debug('could not find Node within %o, resetting `ec`', range.endContainer);
           if (collapsed) {
             ec = sc;
             eo = so;
@@ -204,8 +156,57 @@ function normalize (range) {
           break;
         }
       }
-    } else {
-      break;
+
+
+      if (ec.nodeType === 1) {
+        if (voidElements[ec.nodeName]) {
+          debug('end is a "void element", need to use parent node', ec);
+          var v = ec;
+          ec = v.parentNode;
+          eo = indexOf(ec.childNodes, v) + 1;
+          break;
+        } else {
+          debug('end is an Element, need to find deepest node at offset %o', eo);
+          end = true;
+
+          if (eo >= ec.childNodes.length) {
+            ec = ec.childNodes[ec.childNodes.length - 1];
+          } else {
+            ec = ec.childNodes[eo - 1];
+          }
+
+          var c;
+          while (ec) {
+            if (ec.nodeType === 3) break;
+            c = ec.lastChild;
+            if (c && voidElements[c.nodeName]) break;
+            ec = c;
+          }
+
+          if (ec) {
+            if (ec.nodeType === 1) {
+              // a "void element"'s parent
+              eo = ec.childNodes.length;
+            } else {
+              // text node
+              eo = ec.nodeValue.length;
+            }
+            break;
+          } else {
+            debug('could not find TextNode within %o, resetting `ec`', range.endContainer);
+            if (collapsed) {
+              ec = sc;
+              eo = so;
+            } else {
+              ec = range.endContainer;
+              eo = range.endOffset;
+            }
+            break;
+          }
+        }
+      } else {
+        break;
+      }
     }
   }
 
